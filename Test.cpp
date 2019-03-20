@@ -9,6 +9,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+#include "joystickMouse.hpp"
 
 
 
@@ -17,6 +18,8 @@
 
 #define BULK_ENDPOINT_OUT 1
 #define BULK_ENDPOINT_IN  2
+
+CJoystickMouseHK m_js;
 
 struct userDevice{
 	/*Device descriptor*/
@@ -238,6 +241,7 @@ int main()
 		//BULK_ENDPOINT_IN
 		//user_device.bInEndpointAddress
 #if 1
+		cv::Point m_to;
 		while(1)
 		{
 			rv =  libusb_interrupt_transfer(g_usb_handle,user_device.bInEndpointAddress,a,8,&length,10000000);
@@ -247,12 +251,16 @@ int main()
 			}
 			else
 			{
+#if 0
 				int i;
 				printf("length = %d \n",length);
 				for(i =7; i >= 0 ; i--)
 					printf(" %02x ",a[i]);
 
 				putchar(10);
+#endif
+				  m_js.update(a[3], a[4],m_to);
+				  printf("\r\t %d, %d\n", m_to.x, m_to.y);
 			}
 		}
 #endif
